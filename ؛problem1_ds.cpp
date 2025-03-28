@@ -1,6 +1,4 @@
 #include <iostream>
-#include <algorithm>
-
 using namespace std;
 
 class guest {
@@ -10,7 +8,7 @@ private:
     string iftar_date;
 
 public:
-    guest() {} // Constructor for dynamic allocation
+    guest() {} 
 
     guest(string name, string contact, string iftar_date) {
         this->name = name;
@@ -29,7 +27,7 @@ public:
     }
 
     void display_guest() const {
-        cout << "Guest: " << name << ", Contact: " << contact
+        cout << "guest: " << name << ", Contact: " << contact
              << ", Iftar Date: " << iftar_date << endl;
     }
 
@@ -44,19 +42,68 @@ private:
     int size;
     int no_guests;
 
+    void merge(int left, int mid, int right) {
+        int left_size = mid - left + 1;
+        int right_size = right - mid;
+
+        guest* left_arr = new guest[left_size];
+        guest* right_arr = new guest[right_size];
+
+        for (int i = 0; i < left_size; i++)
+            left_arr[i] = guest_list[left + i];
+        for (int i = 0; i < right_size; i++)
+            right_arr[i] = guest_list[mid + 1 + i];
+
+        int i = 0, j = 0, k = left;
+        while (i < left_size && j < right_size) {
+            if (left_arr[i].getIftarDate() <= right_arr[j].getIftarDate()) {
+                guest_list[k] = left_arr[i];
+                i++;
+            } else {
+                guest_list[k] = right_arr[j];
+                j++;
+            }
+            k++;
+        }
+
+        while (i < left_size) {
+            guest_list[k] = left_arr[i];
+            i++;
+            k++;
+        }
+        while (j < right_size) {
+            guest_list[k] = right_arr[j];
+            j++;
+            k++;
+        }
+
+        delete[] left_arr;
+        delete[] right_arr;
+    }
+
+    void mergeSort(int left, int right) {
+        if (left < right) {
+            int mid = left + (right - left) / 2 ;
+            mergeSort(left, mid) ;
+            mergeSort(mid + 1, right) ;
+            merge(left, mid, right) ;
+        }
+    }
+
+
 public:
     int get_no_guests() {
-        return no_guests;
+        return no_guests ;
     }
 
     IftarManager(int max_size) {
-        size = max_size;
-        no_guests = 0;
-        guest_list = new guest[size];
+        size = max_size ;
+        no_guests = 0 ;
+        guest_list = new guest[size] ;
     }
 
     ~IftarManager() {
-        delete[] guest_list;
+        delete[] guest_list ;
     }
 
     void add_guest(const guest& g) {
@@ -89,15 +136,15 @@ public:
             if (guest_list[i].getName() == name) {
                 found = true;
                 for (int j = i; j < no_guests - 1; j++) {
-                    guest_list[j] = guest_list[j + 1];
+                    guest_list[j] = guest_list[j + 1] ;
                 }
                 no_guests--;
-                cout << "Guest " << name << " removed successfully\n";
+                cout << "Guest " << name << " removed successfully\n" ;
                 return;
             }
         }
         if (!found) {
-            cout << "Guest with name " << name << " not found\n";
+            cout << "guest with name " << name << " not found\n";
         }
     }
 
@@ -125,25 +172,23 @@ public:
         }
     }
 
-    void sort_guest_list() {
-        cout << "Sorting Guest list by Iftar date...\n";
-        sort(guest_list, guest_list + no_guests, [](const guest& a, const guest& b) {
-            return a.getIftarDate() < b.getIftarDate();
-        });
-        cout << "Guest list sorted successfully!\n";
+  void sort_guest_list() {
+        cout << "Sorting guest list using Merge Sort .....\n" ;
+        mergeSort(0 , no_guests - 1) ;
+        cout << "guest list sorted \n " ;
     }
 };
 
 int main() {
-    int MaxGuests;
-    cout << "Enter maximum number of guests: ";
+    int MaxGuests; 
+    cout << "Enter maximum number of guests : ";
     cin >> MaxGuests;
     cin.ignore();
 
     IftarManager manager(MaxGuests);
 
     while (true) {
-        cout << "\n====== Iftar Manager ======\n";
+        cout << "\n Iftar Manager : \n";
         cout << "1. Add Guest\n";
         cout << "2. Remove Guest\n";
         cout << "3. Show Guest List\n";
